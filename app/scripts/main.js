@@ -18,7 +18,7 @@
  */
 /* eslint-env browser */
 
-(function($, Backbone) {
+(function() {
   'use strict';
 
   // Check to make sure service workers are supported in the current browser,
@@ -76,15 +76,33 @@
   // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
 
   // Your custom JavaScript goes here
-  var MainView = Backbone.View.extend({
+  var HeaderView = Backbone.View.extend({
+
+    el: 'header',
+
     initialize: function() {
-      console.log('Hello');
+      this.render();
+    },
+
+    render: function() {
+      this.$el.html(MyApp.templates.header());
+      return this;
     }
   });
 
-  var view = new MainView();
+  var SearchBox = Backbone.View.extend({
+    el: '#searchbox',
 
-})($, Backbone);
+    initialize: function() {
+      this.render();
+    },
 
-console.log(MyApp.templates.header());
-console.log(MyApp.templates.hund());
+    render: function() {
+      this.$el.html(MyApp.templates.searchbox());
+      return this;
+    }
+  });
+
+  var headerView = new HeaderView();
+  var searchBox = new SearchBox();
+})();

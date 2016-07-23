@@ -1,7 +1,6 @@
-@import 'foundation';
+// @import 'foundation';
 
-@include foundation-global-styles;
-@include foundation-grid;
+// @include foundation-everything;
 
 
 /*
@@ -9,3 +8,13 @@
  */
 
 
+// larger screen styles
+
+
+/*
+ * SearchBox
+ */
+
+ #searchbox {
+  margin-top: 15px;  
+ }
