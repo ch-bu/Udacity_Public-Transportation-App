@@ -17,7 +17,8 @@
  *
  */
 /* eslint-env browser */
-(function() {
+
+(function($, Backbone) {
   'use strict';
 
   // Check to make sure service workers are supported in the current browser,
@@ -72,5 +73,18 @@
     });
   }
 
+  // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
+
   // Your custom JavaScript goes here
-})();
+  var MainView = Backbone.View.extend({
+    initialize: function() {
+      console.log('Hello');
+    }
+  });
+
+  var view = new MainView();
+
+})($, Backbone);
+
+console.log(MyApp.templates.header());
+console.log(MyApp.templates.hund());
