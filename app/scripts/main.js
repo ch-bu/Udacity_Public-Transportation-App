@@ -93,6 +93,10 @@
   var SearchBox = Backbone.View.extend({
     el: '#searchbox',
 
+    events: {
+      'click #searchbox_button': 'findConnection'
+    },
+
     initialize: function() {
       this.render();
     },
@@ -100,6 +104,25 @@
     render: function() {
       this.$el.html(MyApp.templates.searchbox());
       return this;
+    },
+
+    findConnection: function() {
+      /*
+       * Searches database for connection and renders
+       * connections
+       */
+
+      // Get input variables
+      var fromInput = this.$el.find('#searchbox_from').val().trim();
+      var toInput = this.$el.find('#searchbox_to').val().trim();
+
+      // Connections can only be found when from and to destination
+      // are specified
+      if (!fromInput || !toInput) {
+        console.log('some value is missing');
+      } else {
+        console.log('nothing missing');
+      }
     }
   });
 
