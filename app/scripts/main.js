@@ -121,11 +121,30 @@
       if (!fromInput || !toInput) {
         console.log('some value is missing');
       } else {
-        console.log('nothing missing');
+
+        // Load progress bar in mainview
+        MainView.renderLoad();
       }
     }
   });
 
-  var headerView = new HeaderView();
-  var searchBox = new SearchBox();
+  var MainView = Backbone.View.extend({
+    el: '#mainview',
+
+    initialize: function() {
+      
+    },
+
+    renderLoad: function() {
+
+      this.$el.html(MyApp.templates.loading());
+      return this;
+    }
+
+  });
+
+
+  var MainView = new MainView();
+  var HeaderView = new HeaderView();
+  var SearchBox = new SearchBox();
 })();
