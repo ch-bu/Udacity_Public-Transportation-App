@@ -75,6 +75,42 @@
 
   // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
 
+  var StationModel = Backbone.Collection.extend({
+      
+    url: 'https://open-api.bahn.de/bin/rest.exe/location.name?lang=de&format=json',
+
+    initialize: function() {
+      // Bahn API key
+      this.apiKey = 'DBhackFrankfurt0316';
+    }
+
+  });
+
+  var MainView = Backbone.View.extend({
+
+    el: '#mainview',
+
+    initialize: function() {
+    },
+
+    renderLoad: function() {
+      /*
+       * Render progress bar
+       */
+
+      // Find stations
+      stationModel.fetch({data: $.param({authKey: 
+        stationModel.apiKey, input: 'Ulm'})}).then(function() {
+        console.log("yeah");
+      });
+
+      // Render search
+      this.$el.html(MyApp.templates.loading());
+      // return this;
+    }
+
+  });
+
   // Your custom JavaScript goes here
   var HeaderView = Backbone.View.extend({
 
@@ -99,9 +135,14 @@
 
     initialize: function() {
       this.render();
+
     },
 
     render: function() {
+      /*
+       * Render searchbox
+       */
+
       this.$el.html(MyApp.templates.searchbox());
       return this;
     },
@@ -113,38 +154,23 @@
        */
 
       // Get input variables
-      var fromInput = this.$el.find('#searchbox_from').val().trim();
-      var toInput = this.$el.find('#searchbox_to').val().trim();
+      var fromInput = this.$el.find('.searchbox_from').val().trim();
+      var toInput = this.$el.find('.searchbox_to').val().trim();
 
       // Connections can only be found when from and to destination
       // are specified
       if (!fromInput || !toInput) {
         console.log('some value is missing');
       } else {
-
         // Load progress bar in mainview
-        MainView.renderLoad();
+        mainView.renderLoad();
       }
     }
   });
 
-  var MainView = Backbone.View.extend({
-    el: '#mainview',
+  var mainView = new MainView();
+  var headerView = new HeaderView();
+  var searchBox = new SearchBox();
+  var stationModel = new StationModel();
 
-    initialize: function() {
-      
-    },
-
-    renderLoad: function() {
-
-      this.$el.html(MyApp.templates.loading());
-      return this;
-    }
-
-  });
-
-
-  var MainView = new MainView();
-  var HeaderView = new HeaderView();
-  var SearchBox = new SearchBox();
 })();
