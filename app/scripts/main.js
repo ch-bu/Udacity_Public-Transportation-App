@@ -99,9 +99,16 @@
        */
 
       // Find stations
-      stationModel.fetch({data: $.param({authKey: 
-        stationModel.apiKey, input: 'Ulm'})}).then(function() {
+      stationModel.fetch({
+
+        dataType: 'json',
+
+        data: $.param({authKey: stationModel.apiKey, input: 'Ulm'})
+
+      }).then(function() {
         console.log("yeah");
+      }).catch(function() {
+        console.log("there was an error");
       });
 
       // Render search

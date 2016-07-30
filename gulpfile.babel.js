@@ -39,9 +39,35 @@ var handlebars = require('gulp-handlebars');
 var wrap = require('gulp-wrap');
 var declare = require('gulp-declare');
 var concat = require('gulp-concat');
+var mainBowerFiles = require('main-bower-files');
+var filter = require('gulp-filter');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
+
+
+// Pip js bower files to js folder
+gulp.task('bower-files-js', function() {
+
+  // Js filter
+  const f = filter('**/*.js');
+
+  gulp.src(mainBowerFiles())
+    .pipe(f)
+    // .pipe(plugins.filter('*.js'))
+    .pipe(gulp.dest('app/scripts/vendor'));
+});
+
+// Pipe CSS from bower to styles directory
+gulp.task('bower-files-css', function() {
+
+  // CSS filter
+  const css = filter('**/*.css');
+
+  gulp.src(mainBowerFiles())
+    .pipe(css)
+    .pipe(gulp.dest('app/styles/'));
+});
 
 // Lint JavaScript
 gulp.task('lint', () =>
@@ -110,10 +136,7 @@ gulp.task('styles', () => {
   ])
     .pipe($.newer('.tmp/styles'))
     .pipe($.sourcemaps.init())
-    .pipe($.sass({
-      precision: 10,
-      includePaths: ['node_modules/foundation-sites/scss']
-    }).on('error', $.sass.logError))
+    .pipe($.sass({precision: 10}).on('error', $.sass.logError))
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
     .pipe(gulp.dest('.tmp/styles'))
     // Concatenate and minify styles
@@ -131,6 +154,12 @@ gulp.task('scripts', () =>
       // Note: Since we are not using useref in the scripts build pipeline,
       //       you need to explicitly list your scripts here in the right order
       //       to be correctly concatenated
+      './app/scripts/vendor/handlebars.js',
+      './app/scripts/templates.js',
+      './app/scripts/vendor/jquery.js',
+      './app/scripts/vendor/underscore.js',
+      './app/scripts/vendor/backbone.js',
+      './app/scripts/vendor/materialize.js',
       './app/scripts/main.js'
       // Other scripts
     ])
@@ -145,6 +174,7 @@ gulp.task('scripts', () =>
       .pipe($.size({title: 'scripts'}))
       .pipe($.sourcemaps.write('.'))
       .pipe(gulp.dest('dist/scripts'))
+      .pipe(gulp.dest('.tmp/scripts'))
 );
 
 // Scan your HTML for assets & optimize them
@@ -176,7 +206,7 @@ gulp.task('html', () => {
 gulp.task('clean', () => del(['.tmp', 'dist/*', '!dist/.git'], {dot: true}));
 
 // Watch files for changes & reload
-gulp.task('serve', ['templates', 'scripts', 'styles'], () => {
+gulp.task('serve', ['templates', 'scripts', 'styles', 'bower-files-js', 'bower-files-css'], () => {
   browserSync({
     notify: false,
     // Customize the Browsersync console logging prefix
@@ -236,10 +266,10 @@ gulp.task('pagespeed', cb =>
 );
 
 // Copy over the scripts that are used in importScripts as part of the generate-service-worker task.
-gulp.task('copy-sw-scripts', () => {
-  return gulp.src(['node_modules/sw-toolbox/sw-toolbox.js', 'app/scripts/sw/runtime-caching.js'])
-    .pipe(gulp.dest('dist/scripts/sw'));
-});
+// gulp.task('copy-sw-scripts', () => {
+//   return gulp.src(['node_modules/sw-toolbox/sw-toolbox.js', 'app/scripts/sw/runtime-caching.js'])
+//     .pipe(gulp.dest('dist/scripts/sw'));
+// });
 
 // See http://www.html5rocks.com/en/tutorials/service-worker/introduction/ for
 // an in-depth explanation of what service workers are and why you should care.
