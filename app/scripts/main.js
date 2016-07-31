@@ -75,7 +75,7 @@
 
   // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
 
-  var StationModel = Backbone.Collection.extend({
+  var StationCollection = Backbone.Collection.extend({
     // http://511.org/developers/list/apis/
       
     url: 'http://api.511.org/transit/stops',
@@ -92,26 +92,26 @@
     el: '#mainview',
 
     initialize: function() {
+
+      // Get stations
+      stationCollection.fetch({
+
+        dataType: 'json',
+
+        data: $.param({api_key: stationCollection.api_key, operator_id: 'SFMTA', format: 'json'}),
+
+      }).then(function(response) {
+        console.log(response.Contents.dataObjects.ScheduledStopPoint);
+      }).catch(function(resp) {
+        console.log("Problem");
+      });
+
     },
 
     renderLoad: function() {
       /*
        * Render progress bar
        */
-
-      // Find stations
-      stationModel.fetch({
-
-        dataType: 'xml',
-
-        data: $.param({api_key: stationModel.api_key, operator_id: 'SFMTA', 
-          format: 'json'})
-
-      }).then(function(response) {
-        console.log("we did it");
-      }).catch(function(resp) {
-        console.log(resp);
-      });
 
       // Render search
       this.$el.html(MyApp.templates.loading());
@@ -177,9 +177,10 @@
     }
   });
 
+  var stationCollection = new StationCollection();
   var mainView = new MainView();
   var headerView = new HeaderView();
   var searchBox = new SearchBox();
-  var stationModel = new StationModel();
+
 
 })();
