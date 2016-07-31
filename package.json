@@ -46,7 +46,5 @@
   "eslintConfig": {
     "extends": "google"
   },
-  "dependencies": {
-    "foundation-sites": "^6.2.3"
-  }
+  "dependencies": {}
 }

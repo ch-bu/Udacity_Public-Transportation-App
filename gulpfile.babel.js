@@ -46,27 +46,25 @@ const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 
-// Pip js bower files to js folder
-gulp.task('bower-files-js', function() {
+// Pipe main bower files
+gulp.task('bower-files', function() {
 
   // Js filter
-  const f = filter('**/*.js');
+  const jsFiles = filter('**/*.js');
+  const cssFiles = filter('**/*.css');
 
-  gulp.src(mainBowerFiles())
-    .pipe(f)
-    // .pipe(plugins.filter('*.js'))
+  var mainBower = mainBowerFiles();
+
+  // Bring js files to .tmp directory
+  gulp.src(mainBower)
+    .pipe(jsFiles)
     .pipe(gulp.dest('app/scripts/vendor'));
-});
 
-// Pipe CSS from bower to styles directory
-gulp.task('bower-files-css', function() {
-
-  // CSS filter
-  const css = filter('**/*.css');
-
-  gulp.src(mainBowerFiles())
-    .pipe(css)
+  // Bring css files to .tmp directory
+  gulp.src(mainBower)
+    .pipe(cssFiles)
     .pipe(gulp.dest('app/styles/'));
+
 });
 
 // Lint JavaScript
@@ -108,7 +106,7 @@ gulp.task('copy', () =>
   gulp.src([
     'app/*',
     '!app/*.html',
-    'node_modules/apache-server-configs/dist/.htaccess'
+    // 'node_modules/apache-server-configs/dist/.htaccess'
   ], {
     dot: true
   }).pipe(gulp.dest('dist'))
@@ -161,13 +159,12 @@ gulp.task('scripts', () =>
       './app/scripts/vendor/backbone.js',
       './app/scripts/vendor/materialize.js',
       './app/scripts/main.js'
-      // Other scripts
     ])
       .pipe($.newer('.tmp/scripts'))
       .pipe($.sourcemaps.init())
       .pipe($.babel())
       .pipe($.sourcemaps.write())
-      .pipe(gulp.dest('.tmp/scripts'))
+      // .pipe(gulp.dest('.tmp/scripts'))
       .pipe($.concat('main.min.js'))
       .pipe($.uglify({preserveComments: 'some'}))
       // Output files
@@ -206,7 +203,7 @@ gulp.task('html', () => {
 gulp.task('clean', () => del(['.tmp', 'dist/*', '!dist/.git'], {dot: true}));
 
 // Watch files for changes & reload
-gulp.task('serve', ['templates', 'scripts', 'styles', 'bower-files-js', 'bower-files-css'], () => {
+gulp.task('serve', ['scripts', 'styles'], () => {
   browserSync({
     notify: false,
     // Customize the Browsersync console logging prefix
