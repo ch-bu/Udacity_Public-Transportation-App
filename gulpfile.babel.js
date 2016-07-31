@@ -214,8 +214,27 @@ gulp.task('serve', ['scripts', 'styles'], () => {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: ['.tmp', 'app'],
-    port: 3000
+    port: 3000,
+    server: {
+      baseDir: ['.tmp', 'app'],
+      middleware: function (req, res, next) {
+
+        // Website you wish to allow to connect
+        res.setHeader('Access-Control-Allow-Origin', 'https://open-api.bahn.de');
+
+        // Request methods you wish to allow
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+        // Request headers you wish to allow
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+        // Set to true if you need the website to include cookies in the requests sent
+        // to the API (e.g. in case you use sessions)
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        
+        next();
+      }
+    }
   });
 
   gulp.watch(['app/**/*.html'], reload);
@@ -252,15 +271,15 @@ gulp.task('default', ['clean'], cb =>
 );
 
 // Run PageSpeed Insights
-gulp.task('pagespeed', cb =>
-  // Update the below URL to the public URL of your site
-  pagespeed('example.com', {
-    strategy: 'mobile'
-    // By default we use the PageSpeed Insights free (no API key) tier.
-    // Use a Google Developer API key if you have one: http://goo.gl/RkN0vE
-    // key: 'YOUR_API_KEY'
-  }, cb)
-);
+// gulp.task('pagespeed', cb =>
+//   // Update the below URL to the public URL of your site
+//   pagespeed('example.com', {
+//     strategy: 'mobile'
+//     // By default we use the PageSpeed Insights free (no API key) tier.
+//     // Use a Google Developer API key if you have one: http://goo.gl/RkN0vE
+//     // key: 'YOUR_API_KEY'
+//   }, cb)
+// );
 
 // Copy over the scripts that are used in importScripts as part of the generate-service-worker task.
 // gulp.task('copy-sw-scripts', () => {

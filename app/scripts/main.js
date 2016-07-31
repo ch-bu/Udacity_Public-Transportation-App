@@ -76,12 +76,13 @@
   // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
 
   var StationModel = Backbone.Collection.extend({
+    // http://511.org/developers/list/apis/
       
-    url: 'https://open-api.bahn.de/bin/rest.exe/location.name?lang=de&format=json',
+    url: 'http://api.511.org/transit/stops',
 
     initialize: function() {
       // Bahn API key
-      this.apiKey = 'DBhackFrankfurt0316';
+      this.api_key = '7ea32ea8-dbe1-4f0a-a321-7148023015bd';
     }
 
   });
@@ -101,14 +102,15 @@
       // Find stations
       stationModel.fetch({
 
-        dataType: 'json',
+        dataType: 'xml',
 
-        data: $.param({authKey: stationModel.apiKey, input: 'Ulm'})
+        data: $.param({api_key: stationModel.api_key, operator_id: 'SFMTA', 
+          format: 'json'})
 
-      }).then(function() {
-        console.log("yeah");
-      }).catch(function() {
-        console.log("there was an error");
+      }).then(function(response) {
+        console.log("we did it");
+      }).catch(function(resp) {
+        console.log(resp);
       });
 
       // Render search
@@ -162,10 +164,11 @@
 
       // Get input variables
       var fromInput = this.$el.find('.searchbox_from').val().trim();
+      var toInput = this.$el.find('.searchbox_to').val().trim();
 
       // Connections can only be found when from and to destination
       // are specified
-      if (!fromInput) {
+      if (!fromInput || !toInput) {
         console.log('some value is missing');
       } else {
         // Load progress bar in mainview
