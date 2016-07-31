@@ -162,11 +162,10 @@
 
       // Get input variables
       var fromInput = this.$el.find('.searchbox_from').val().trim();
-      var toInput = this.$el.find('.searchbox_to').val().trim();
 
       // Connections can only be found when from and to destination
       // are specified
-      if (!fromInput || !toInput) {
+      if (!fromInput) {
         console.log('some value is missing');
       } else {
         // Load progress bar in mainview
