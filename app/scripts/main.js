@@ -115,7 +115,6 @@
 
       // Check if station data is in localStorage
       if (localStorage.getItem('stations')) {
-
         // Add local storage to collection
         stationCollection.add(JSON.parse(localStorage.getItem('stations')));
 
@@ -124,7 +123,6 @@
 
         // Remove loading ring
         self.$el.html('');
-
       } else {
         // Get stations
         stationCollection.fetch({
@@ -143,13 +141,12 @@
           self.$el.html('');
 
           // Save data in localStorage
-          localStorage.setItem('stations', JSON.stringify(stationCollection.toJSON()));
-
+          localStorage.setItem('stations',
+            JSON.stringify(stationCollection.toJSON()));
         }).catch(function(resp) {
           console.log('Problem');
         });
       }
-      
     },
 
     renderLoad: function() {
@@ -206,7 +203,8 @@
        */
 
       // Add searchbox
-      this.$el.html(MyApp.templates.searchbox({stations: stationCollection.toJSON()}));
+      this.$el.html(MyApp.templates.searchbox({stations:
+        stationCollection.toJSON()}));
 
       // Init select functionality in materialize
       $('select').material_select();
@@ -220,18 +218,9 @@
        * connections
        */
 
-      // Get input variables
-      // var fromInput = this.$el.find('.searchbox_from').val().trim();
-      // var toInput = this.$el.find('.searchbox_to').val().trim();
-
-      // // Connections can only be found when from and to destination
-      // // are specified
-      // if (!fromInput || !toInput) {
-      //   console.log('some value is missing');
-      // } else {
-      //   // Load progress bar in mainview
-      //   mainView.renderLoad();
-      // }
+      // Get IDs for stations
+      var fromInput = this.$el.find('#searchboxFrom').val();
+      var fromTo = this.$el.find('#searchboxTo').val();
     }
   });
 

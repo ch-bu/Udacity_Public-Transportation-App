@@ -2,10 +2,10 @@
 
   <div class="row">
     <div class="input-field">
-      <select>
+      <select id="searchboxFrom">
         <option value="" disabled selected>Choose your option</option>
         {{#each stations}}
-          <option value="{{this.id}}">{{this.Name}}</option>
+          <option id={{this.id}} value="{{this.id}}">{{this.Name}}</option>
         {{/each}}
       </select>
       <label>Where are you?</label>
@@ -14,7 +14,7 @@
 
   <div class="row">
     <div class="input-field">
-      <select>
+      <select id="searchboxTo">
         <option value="" disabled selected>Choose your option</option>
         {{#each stations}}
           <option value="{{this.id}}">{{this.Name}}</option>
