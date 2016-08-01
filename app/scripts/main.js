@@ -76,36 +76,80 @@
   // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
 
   var StationCollection = Backbone.Collection.extend({
+    /*
+     * Collection of all stations that exist for
+     * given operator.
+     *
+     */
     // http://511.org/developers/list/apis/
-      
+
+    // Url of endpoint
     url: 'http://api.511.org/transit/stops',
 
     initialize: function() {
       // Bahn API key
-      this.api_key = '7ea32ea8-dbe1-4f0a-a321-7148023015bd';
-    }
+      this.apiKey = '7ea32ea8-dbe1-4f0a-a321-7148023015bd';
+    },
 
+    parse: function(response) {
+      return response.Contents.dataObjects.ScheduledStopPoint;
+    }
   });
 
   var MainView = Backbone.View.extend({
+    /*
+     * MainView. Displays connections
+     *
+     */
 
     el: '#mainview',
 
     initialize: function() {
+      // Init searchbox
+      var searchBox = new SearchBox();
 
-      // Get stations
-      stationCollection.fetch({
+      var self = this;
 
-        dataType: 'json',
+      // Render load bar
+      this.renderLoad();
 
-        data: $.param({api_key: stationCollection.api_key, operator_id: 'SFMTA', format: 'json'}),
+      // Check if station data is in localStorage
+      if (localStorage.getItem('stations')) {
 
-      }).then(function(response) {
-        console.log(response.Contents.dataObjects.ScheduledStopPoint);
-      }).catch(function(resp) {
-        console.log("Problem");
-      });
+        // Add local storage to collection
+        stationCollection.add(JSON.parse(localStorage.getItem('stations')));
 
+        // Immediately render searchbox
+        searchBox.render();
+
+        // Remove loading ring
+        self.$el.html('');
+
+      } else {
+        // Get stations
+        stationCollection.fetch({
+
+          dataType: 'json',
+
+          // Add parameters to api endpoint
+          data: $.param({api_key: stationCollection.apiKey, operator_id: 'BART',
+            format: 'json'})
+
+        }).then(function(response) {
+          // Display search box
+          searchBox.render();
+
+          // Remove loading ring
+          self.$el.html('');
+
+          // Save data in localStorage
+          localStorage.setItem('stations', JSON.stringify(stationCollection.toJSON()));
+
+        }).catch(function(resp) {
+          console.log('Problem');
+        });
+      }
+      
     },
 
     renderLoad: function() {
@@ -122,6 +166,10 @@
 
   // Your custom JavaScript goes here
   var HeaderView = Backbone.View.extend({
+    /*
+     * Header on top of app
+     *
+     */
 
     el: 'header',
 
@@ -136,6 +184,12 @@
   });
 
   var SearchBox = Backbone.View.extend({
+    /*
+     * Search Box for user input
+     *  defines destination where user is and want's to go
+     *
+     */
+
     el: '#searchbox',
 
     events: {
@@ -143,7 +197,6 @@
     },
 
     initialize: function() {
-      this.render();
 
     },
 
@@ -152,7 +205,12 @@
        * Render searchbox
        */
 
-      this.$el.html(MyApp.templates.searchbox());
+      // Add searchbox
+      this.$el.html(MyApp.templates.searchbox({stations: stationCollection.toJSON()}));
+
+      // Init select functionality in materialize
+      $('select').material_select();
+
       return this;
     },
 
@@ -163,24 +221,26 @@
        */
 
       // Get input variables
-      var fromInput = this.$el.find('.searchbox_from').val().trim();
-      var toInput = this.$el.find('.searchbox_to').val().trim();
+      // var fromInput = this.$el.find('.searchbox_from').val().trim();
+      // var toInput = this.$el.find('.searchbox_to').val().trim();
 
-      // Connections can only be found when from and to destination
-      // are specified
-      if (!fromInput || !toInput) {
-        console.log('some value is missing');
-      } else {
-        // Load progress bar in mainview
-        mainView.renderLoad();
-      }
+      // // Connections can only be found when from and to destination
+      // // are specified
+      // if (!fromInput || !toInput) {
+      //   console.log('some value is missing');
+      // } else {
+      //   // Load progress bar in mainview
+      //   mainView.renderLoad();
+      // }
     }
   });
 
+  // Document is loaded
+  $(document).ready(function() {
+    var mainView = new MainView();
+  });
+
+  // Variable declaration
   var stationCollection = new StationCollection();
-  var mainView = new MainView();
   var headerView = new HeaderView();
-  var searchBox = new SearchBox();
-
-
 })();

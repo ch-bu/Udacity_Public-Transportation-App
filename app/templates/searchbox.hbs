@@ -2,15 +2,25 @@
 
   <div class="row">
     <div class="input-field">
-      <input id="autocomplete" type="text" class="validate searchbox_from">
-      <label for="autocomplete">Where are you?</label>
+      <select>
+        <option value="" disabled selected>Choose your option</option>
+        {{#each stations}}
+          <option value="{{this.id}}">{{this.Name}}</option>
+        {{/each}}
+      </select>
+      <label>Where are you?</label>
     </div>
   </div>
 
   <div class="row">
     <div class="input-field">
-      <input id="autocomplete" type="text" class="validate searchbox_to">
-      <label for="autocomplete">Where do you wanna go?</label>
+      <select>
+        <option value="" disabled selected>Choose your option</option>
+        {{#each stations}}
+          <option value="{{this.id}}">{{this.Name}}</option>
+        {{/each}}
+      </select>
+      <label>Where do you wanna go?</label>
     </div>
   </div>
 

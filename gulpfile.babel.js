@@ -69,7 +69,7 @@ gulp.task('bower-files', function() {
 
 // Lint JavaScript
 gulp.task('lint', () =>
-  gulp.src(['app/scripts/*.js', '!app/scripts/templates.js'])
+  gulp.src(['app/scripts/main.js', '!app/scripts/templates.js'])
     .pipe($.eslint())
     .pipe($.eslint.format())
     .pipe($.if(!browserSync.active, $.eslint.failOnError()))
