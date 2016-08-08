@@ -2,13 +2,17 @@
 
   <div class="row">
     <div class="input-field">
-      <select id="searchboxFrom">
+
+      <input type="text" id="autocomplete-input" class="autocomplete">
+      <label for="autocomplete-input">Autocomplete</label>
+
+      <!-- <select id="searchboxFrom">
         <option value="" disabled selected>Choose your option</option>
         {{#each stations}}
-          <option id={{this.id}} value="{{this.id}}">{{this.Name}}</option>
+          <option id={{this.id}} value="{{this.id}}">{{this.name}}</option>
         {{/each}}
       </select>
-      <label>Where are you?</label>
+      <label>Where are you?</label>-->
     </div>
   </div>
 
@@ -17,7 +21,7 @@
       <select id="searchboxTo">
         <option value="" disabled selected>Choose your option</option>
         {{#each stations}}
-          <option value="{{this.id}}">{{this.Name}}</option>
+          <option value="{{this.id}}">{{this.name}}</option>
         {{/each}}
       </select>
       <label>Where do you wanna go?</label>

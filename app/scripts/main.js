@@ -73,7 +73,10 @@
     });
   }
 
-  // http://download-data.deutschebahn.com/static/apis/fahrplan/Fpl-API-Doku-Open-Data-BETA-0_81_2.pdf
+  var sendAuthentication = function(xhr) {
+    xhr.setRequestHeader('Authorization',
+      ("Basic ".concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
+  };
 
   var StationCollection = Backbone.Collection.extend({
     /*
@@ -81,18 +84,28 @@
      * given operator.
      *
      */
-    // http://511.org/developers/list/apis/
+
+    // https://api.navitia.io/v1/journeys?from=7.842104%3B47.999008&to=8.682127%3B50.110922&datetime=20160805T160000&
 
     // Url of endpoint
-    url: 'http://api.511.org/transit/stops',
+    url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
 
     initialize: function() {
       // Bahn API key
-      this.apiKey = '7ea32ea8-dbe1-4f0a-a321-7148023015bd';
+      // this.apiKey = '16897ba2-c7cf-4a45-8803-fa2f46337f2f';
     },
 
     parse: function(response) {
-      return response.Contents.dataObjects.ScheduledStopPoint;
+      return response.stop_points;
+    },
+
+    byName: function() {
+      var filtered = this.filter(function(station) {
+        console.log(station.get('name'));
+        return station.get('name');
+      });
+
+      return filtered;
     }
   });
 
@@ -123,15 +136,15 @@
 
         // Remove loading ring
         self.$el.html('');
+      // Station data not cached
       } else {
         // Get stations
         stationCollection.fetch({
 
-          dataType: 'json',
+          beforeSend: sendAuthentication,
 
           // Add parameters to api endpoint
-          data: $.param({api_key: stationCollection.apiKey, operator_id: 'BART',
-            format: 'json'})
+          data: $.param({count: 500})
 
         }).then(function(response) {
           // Display search box
@@ -208,6 +221,17 @@
 
       // Init select functionality in materialize
       $('select').material_select();
+
+      // Init autocomplete functionality
+      $('input.autocomplete').autocomplete({
+        data: {
+          'Apple': null,
+          'Microsoft': null,
+          'Google': 'http://placehold.it/250x250'
+        }
+      });
+
+      console.log(stationCollection.byName());
 
       return this;
     },

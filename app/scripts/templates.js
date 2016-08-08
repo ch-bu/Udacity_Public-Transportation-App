@@ -14,7 +14,7 @@ this["MyApp"]["templates"]["searchbox"] = Handlebars.template({"1":function(cont
     + " value=\""
     + alias2(alias1((depth0 != null ? depth0.id : depth0), depth0))
     + "\">"
-    + alias2(alias1((depth0 != null ? depth0.Name : depth0), depth0))
+    + alias2(alias1((depth0 != null ? depth0.name : depth0), depth0))
     + "</option>\n";
 },"3":function(container,depth0,helpers,partials,data) {
     var alias1=container.lambda, alias2=container.escapeExpression;
@@ -22,14 +22,14 @@ this["MyApp"]["templates"]["searchbox"] = Handlebars.template({"1":function(cont
   return "          <option value=\""
     + alias2(alias1((depth0 != null ? depth0.id : depth0), depth0))
     + "\">"
-    + alias2(alias1((depth0 != null ? depth0.Name : depth0), depth0))
+    + alias2(alias1((depth0 != null ? depth0.name : depth0), depth0))
     + "</option>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=depth0 != null ? depth0 : {};
 
-  return "<form id=\"searchbox\" class=\"col s10 offset-s1 m8 offset-m2\">\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <select id=\"searchboxFrom\">\n        <option value=\"\" disabled selected>Choose your option</option>\n"
+  return "<form id=\"searchbox\" class=\"col s10 offset-s1 m8 offset-m2\">\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n\n      <input type=\"text\" id=\"autocomplete-input\" class=\"autocomplete\">\n      <label for=\"autocomplete-input\">Autocomplete</label>\n\n      <!-- <select id=\"searchboxFrom\">\n        <option value=\"\" disabled selected>Choose your option</option>\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.stations : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </select>\n      <label>Where are you?</label>\n    </div>\n  </div>\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <select id=\"searchboxTo\">\n        <option value=\"\" disabled selected>Choose your option</option>\n"
+    + "      </select>\n      <label>Where are you?</label>-->\n    </div>\n  </div>\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <select id=\"searchboxTo\">\n        <option value=\"\" disabled selected>Choose your option</option>\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.stations : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </select>\n      <label>Where do you wanna go?</label>\n    </div>\n  </div>\n\n  <div class=\"row center-align\">\n      <a id=\"searchbox_button\" class=\"waves-effect waves-light btn\">Find trains.</a>\n  </div>\n</form>";
 },"useData":true});
