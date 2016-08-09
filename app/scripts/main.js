@@ -91,8 +91,6 @@
     url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
 
     initialize: function() {
-      // Bahn API key
-      // this.apiKey = '16897ba2-c7cf-4a45-8803-fa2f46337f2f';
     },
 
     parse: function(response) {
@@ -100,13 +98,25 @@
     },
 
     byName: function() {
-      var filtered = this.filter(function(station) {
-        console.log(station.get('name'));
-        return station.get('name');
+      // Return Object with name as key and null as value
+
+      var stations = {};
+
+      this.each(function(x) {
+        stations[x.get('name')] = null;
       });
 
-      return filtered;
+      return stations;
     }
+  });
+
+  var JourneyModel = Backbone.Model.extend({
+    /*
+     * Journey from to another destination
+     */
+
+    url: 'https://api.navitia.io/v1/journeys'
+
   });
 
   var MainView = Backbone.View.extend({
@@ -224,14 +234,8 @@
 
       // Init autocomplete functionality
       $('input.autocomplete').autocomplete({
-        data: {
-          'Apple': null,
-          'Microsoft': null,
-          'Google': 'http://placehold.it/250x250'
-        }
+        data: stationCollection.byName()
       });
-
-      console.log(stationCollection.byName());
 
       return this;
     },
@@ -243,8 +247,33 @@
        */
 
       // Get IDs for stations
-      var fromInput = this.$el.find('#searchboxFrom').val();
-      var fromTo = this.$el.find('#searchboxTo').val();
+      var fromInput = this.$el.find('#autocomplete-input-from').val();
+      var toInput = this.$el.find('#autocomplete-input-to').val();
+
+      // Get models
+      var fromModel = stationCollection.find(function(model) {
+        return model.get('name') === fromInput;
+      }).get('coord');
+      var toModel = stationCollection.find(function(model) {
+        return model.get('name') === toInput;
+      }).get('coord');
+
+      var fromCoord = fromModel.lon.concat(';', fromModel.lat);
+      var toCoord = toModel.lon.concat(';', toModel.lat);
+
+      // Get journey
+      journeyModel.fetch({
+
+          beforeSend: sendAuthentication,
+
+          // Add parameters to api endpoint
+          data: $.param({from: fromCoord, to: toCoord})
+
+        }).then(function(response) {
+          console.log(response);
+        }).catch(function(resp) {
+          console.log('Problem finding journey');
+        });
     }
   });
 
@@ -255,5 +284,6 @@
 
   // Variable declaration
   var stationCollection = new StationCollection();
+  var journeyModel = new JourneyModel();
   var headerView = new HeaderView();
 })();
