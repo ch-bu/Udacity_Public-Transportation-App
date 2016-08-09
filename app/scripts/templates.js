@@ -3,6 +3,9 @@ this["MyApp"]["templates"] = this["MyApp"]["templates"] || {};
 this["MyApp"]["templates"]["header"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return " <nav>\n    <div class=\"nav-wrapper\">\n      <a href=\"#\" class=\"brand-logo center\">Logo</a>\n    </div>\n  </nav>";
 },"useData":true});
+this["MyApp"]["templates"]["journey"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "";
+},"useData":true});
 this["MyApp"]["templates"]["loading"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<div class=\"progress col s10 offset-s1\">\n  <div class=\"indeterminate\"></div>\n</div>";
 },"useData":true});

@@ -78,212 +78,226 @@
       ("Basic ".concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
   };
 
-  var StationCollection = Backbone.Collection.extend({
-    /*
-     * Collection of all stations that exist for
-     * given operator.
-     *
-     */
 
-    // Url of endpoint
-    url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
+  // Document is loaded
+  $(document).ready(function() {
 
-    initialize: function() {
-    },
+    var StationCollection = Backbone.Collection.extend({
+      /*
+       * Collection of all stations that exist for
+       * given operator.
+       *
+       */
 
-    parse: function(response) {
-      return response.stop_points;
-    },
+      // Url of endpoint
+      url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
 
-    byName: function() {
-      // Return Object with name as key and null as value
+      initialize: function() {
+      },
 
-      var stations = {};
+      parse: function(response) {
+        return response.stop_points;
+      },
 
-      this.each(function(x) {
-        stations[x.get('name')] = null;
-      });
+      byName: function() {
+        // Return Object with name as key and null as value
 
-      return stations;
-    }
-  });
+        var stations = {};
 
-  var JourneyModel = Backbone.Model.extend({
-    /*
-     * Journey from to another destination
-     */
+        // Build stations object
+        this.each(function(x) {
+          stations[x.get('name')] = null;
+        });
 
-    url: 'https://api.navitia.io/v1/journeys'
+        return stations;
+      }
+    });
 
-  });
+    var JourneyModel = Backbone.Model.extend({
+      /*
+       * Journey from to another destination
+       */
 
-  var MainView = Backbone.View.extend({
-    /*
-     * MainView. Displays connections
-     *
-     */
+      url: 'https://api.navitia.io/v1/journeys',
 
-    el: '#mainview',
+      parse: function(response) {
+        return response.journeys;
+      }
 
-    initialize: function() {
-      // Init searchbox
-      var searchBox = new SearchBox();
+    });
 
-      var self = this;
+    var MainView = Backbone.View.extend({
+      /*
+       * MainView. Displays connections
+       *
+       */
 
-      // Render load bar
-      this.renderLoad();
+      el: '#mainview',
 
-      // Check if station data is in localStorage
-      if (localStorage.getItem('stations')) {
-        // Add local storage to collection
-        stationCollection.add(JSON.parse(localStorage.getItem('stations')));
+      initialize: function() {
+        // Init searchbox
 
-        // Immediately render searchbox
-        searchBox.render();
+        var self = this;
 
-        // Remove loading ring
-        self.$el.html('');
-      // Station data not cached
-      } else {
-        // Get stations
-        stationCollection.fetch({
+        // Render load bar
+        this.renderLoad();
 
-          beforeSend: sendAuthentication,
+        // Check if station data is in localStorage
+        if (localStorage.getItem('stations')) {
+          // Add local storage to collection
+          stationCollection.add(JSON.parse(localStorage.getItem('stations')));
 
-          // Add parameters to api endpoint
-          data: $.param({count: 500})
-
-        }).then(function(response) {
-          // Display search box
+          // Immediately render searchbox
           searchBox.render();
 
           // Remove loading ring
           self.$el.html('');
+        // Station data not cached
+        } else {
+          // Get stations
+          stationCollection.fetch({
 
-          // Save data in localStorage
-          localStorage.setItem('stations',
-            JSON.stringify(stationCollection.toJSON()));
-        }).catch(function(resp) {
-          console.log('Problem');
-        });
+            beforeSend: sendAuthentication,
+
+            // Add parameters to api endpoint
+            data: $.param({count: 500})
+
+          }).then(function(response) {
+            // Display search box
+            searchBox.render();
+
+            // Remove loading ring
+            self.$el.html('');
+
+            // Save data in localStorage
+            localStorage.setItem('stations',
+              JSON.stringify(stationCollection.toJSON()));
+          }).catch(function(resp) {
+            console.log('Problem');
+          });
+        }
+      },
+
+      renderLoad: function() {
+        /*
+         * Render progress bar
+         */
+
+        // Render search
+        this.$el.html(MyApp.templates.loading());
+        // return this;
       }
-    },
 
-    renderLoad: function() {
+    });
+
+    // Your custom JavaScript goes here
+    var HeaderView = Backbone.View.extend({
       /*
-       * Render progress bar
+       * Header on top of app
+       *
        */
 
-      // Render search
-      this.$el.html(MyApp.templates.loading());
-      // return this;
-    }
+      el: 'header',
 
-  });
+      initialize: function() {
+        this.render();
+      },
 
-  // Your custom JavaScript goes here
-  var HeaderView = Backbone.View.extend({
-    /*
-     * Header on top of app
-     *
-     */
+      render: function() {
+        this.$el.html(MyApp.templates.header());
+        return this;
+      }
+    });
 
-    el: 'header',
-
-    initialize: function() {
-      this.render();
-    },
-
-    render: function() {
-      this.$el.html(MyApp.templates.header());
-      return this;
-    }
-  });
-
-  var SearchBox = Backbone.View.extend({
-    /*
-     * Search Box for user input
-     *  defines destination where user is and want's to go
-     *
-     */
-
-    el: '#searchbox',
-
-    events: {
-      'click #searchbox_button': 'findConnection'
-    },
-
-    initialize: function() {
-
-    },
-
-    render: function() {
+    var SearchBox = Backbone.View.extend({
       /*
-       * Render searchbox
+       * Search Box for user input
+       *  defines destination where user is and want's to go
+       *
        */
 
-      // Add searchbox
-      this.$el.html(MyApp.templates.searchbox({stations:
-        stationCollection.toJSON()}));
+      el: '#searchbox',
 
-      // Init select functionality in materialize
-      $('select').material_select();
+      events: {
+        'click #searchbox_button': 'findConnection'
+      },
 
-      // Init autocomplete functionality
-      $('input.autocomplete').autocomplete({
-        data: stationCollection.byName()
-      });
+      initialize: function() {
+        // var searchMainView = new MainView();
+        console.log(mainView);
+      },
 
-      return this;
-    },
+      render: function() {
+        /*
+         * Render searchbox
+         */
 
-    findConnection: function() {
-      /*
-       * Searches database for connection and renders
-       * connections
-       */
+        // Add searchbox
+        this.$el.html(MyApp.templates.searchbox({stations:
+          stationCollection.toJSON()}));
 
-      // Get IDs for stations
-      var fromInput = this.$el.find('#autocomplete-input-from').val();
-      var toInput = this.$el.find('#autocomplete-input-to').val();
+        // Init select functionality in materialize
+        $('select').material_select();
 
-      // Get models
-      var fromModel = stationCollection.find(function(model) {
-        return model.get('name') === fromInput;
-      }).get('coord');
-      var toModel = stationCollection.find(function(model) {
-        return model.get('name') === toInput;
-      }).get('coord');
-
-      var fromCoord = fromModel.lon.concat(';', fromModel.lat);
-      var toCoord = toModel.lon.concat(';', toModel.lat);
-
-      // mainView.renderLoad();
-
-      // Get journey
-      journeyModel.fetch({
-
-          beforeSend: sendAuthentication,
-
-          // Add parameters to api endpoint
-          data: $.param({from: fromCoord, to: toCoord})
-
-        }).then(function(response) {
-          console.log(response);
-        }).catch(function(resp) {
-          console.log('Problem finding journey');
+        // Init autocomplete functionality
+        $('input.autocomplete').autocomplete({
+          data: stationCollection.byName()
         });
-    }
-  });
 
-  // Document is loaded
-  $(document).ready(function() {
+        return this;
+      },
+
+      findConnection: function() {
+        /*
+         * Searches database for connection and renders
+         * connections
+         */
+
+        // Get IDs for stations
+        var fromInput = this.$el.find('#autocomplete-input-from').val();
+        var toInput = this.$el.find('#autocomplete-input-to').val();
+
+        // Get models
+        var fromModel = stationCollection.find(function(model) {
+          return model.get('name') === fromInput;
+        }).get('coord');
+        var toModel = stationCollection.find(function(model) {
+          return model.get('name') === toInput;
+        }).get('coord');
+
+        var fromCoord = fromModel.lon.concat(';', fromModel.lat);
+        var toCoord = toModel.lon.concat(';', toModel.lat);
+
+        // mainView.renderLoad();
+
+        // Get journey
+        journeyModel.fetch({
+
+            beforeSend: sendAuthentication,
+
+            // Add parameters to api endpoint
+            data: $.param({from: fromCoord, to: toCoord})
+
+          }).then(function(response) {
+          }).catch(function(resp) {
+            console.log('Problem finding journey');
+          });
+      }
+    });
+
+    var ApplicationView = Backbone.View.extend({
+      
+    });
+
+
+    var searchBox = new SearchBox();
+    var stationCollection = new StationCollection();
+    var journeyModel = new JourneyModel();
     var mainView = new MainView();
+    var headerView = new HeaderView();
+  
   });
 
-  var stationCollection = new StationCollection();
-  var journeyModel = new JourneyModel();
-  var headerView = new HeaderView();
+
 
 })();
