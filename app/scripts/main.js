@@ -136,46 +136,6 @@
 
       initialize: function() {
         // Init searchbox
-
-        var self = this;
-
-        // Render load bar
-        this.renderLoad();
-
-        // Check if station data is in localStorage
-        if (localStorage.getItem('stations')) {
-          // Add local storage to collection
-          stationCollection.add(JSON.parse(localStorage.getItem('stations')));
-
-          // Immediately render searchbox
-          searchBox.render();
-
-          // Remove loading ring
-          self.$el.html('');
-        // Station data not cached
-        } else {
-          // Get stations
-          stationCollection.fetch({
-
-            beforeSend: sendAuthentication,
-
-            // Add parameters to api endpoint
-            data: $.param({count: 500})
-
-          }).then(function(response) {
-            // Display search box
-            searchBox.render();
-
-            // Remove loading ring
-            self.$el.html('');
-
-            // Save data in localStorage
-            localStorage.setItem('stations',
-              JSON.stringify(stationCollection.toJSON()));
-          }).catch(function(resp) {
-            console.log('Problem');
-          });
-        }
       },
 
       renderLoad: function() {
@@ -186,6 +146,10 @@
         // Render search
         this.$el.html(MyApp.templates.loading());
         // return this;
+      },
+
+      emptyView: function() {
+        this.$el.html('');
       }
 
     });
@@ -223,25 +187,23 @@
       },
 
       initialize: function() {
-        // var searchMainView = new MainView();
-        console.log(mainView);
       },
 
-      render: function() {
+      render: function(jsonData, stationData) {
         /*
          * Render searchbox
          */
 
         // Add searchbox
         this.$el.html(MyApp.templates.searchbox({stations:
-          stationCollection.toJSON()}));
+          jsonData}));
 
         // Init select functionality in materialize
         $('select').material_select();
 
         // Init autocomplete functionality
         $('input.autocomplete').autocomplete({
-          data: stationCollection.byName()
+          data: stationData
         });
 
         return this;
@@ -258,10 +220,10 @@
         var toInput = this.$el.find('#autocomplete-input-to').val();
 
         // Get models
-        var fromModel = stationCollection.find(function(model) {
+        var fromModel = applicationView.stationCollection.find(function(model) {
           return model.get('name') === fromInput;
         }).get('coord');
-        var toModel = stationCollection.find(function(model) {
+        var toModel = applicationView.stationCollection.find(function(model) {
           return model.get('name') === toInput;
         }).get('coord');
 
@@ -271,7 +233,7 @@
         // mainView.renderLoad();
 
         // Get journey
-        journeyModel.fetch({
+        applicationView.journeyModel.fetch({
 
             beforeSend: sendAuthentication,
 
@@ -279,25 +241,79 @@
             data: $.param({from: fromCoord, to: toCoord})
 
           }).then(function(response) {
+            console.log(response);
           }).catch(function(resp) {
             console.log('Problem finding journey');
           });
       }
     });
 
+    
     var ApplicationView = Backbone.View.extend({
       
+      initialize: function() {
+        
+        // Init models and views
+        this.stationCollection = new StationCollection();
+        this.journeyModel = new JourneyModel();
+
+        // Init views
+        this.headerView = new HeaderView();
+        this.searchBox = new SearchBox();
+        this.mainView = new MainView();
+
+        var self = this;
+
+        // Render load bar
+        this.mainView.renderLoad();
+
+        // Check if station data is in localStorage
+        if (localStorage.getItem('stations')) {
+          // Add local storage to collection
+          self.stationCollection.add(JSON.parse(localStorage.getItem('stations')));
+
+          // Immediately render searchbox
+          self.searchBox.render();
+
+          // Remove loading ring
+          self.mainView.emptyView();
+
+          // Enable autocomplete functionality
+          self.searchBox.render(self.stationCollection.toJSON(),
+            self.stationCollection.byName());
+        // Station data not cached
+        } else {
+          // Get stations
+          self.stationCollection.fetch({
+
+            beforeSend: sendAuthentication,
+
+            // Add parameters to api endpoint
+            data: $.param({count: 500})
+
+          }).then(function(response) {
+            // Display search box
+
+            self.searchBox.render(self.stationCollection.toJSON(),
+              self.stationCollection.byName());
+
+            // Remove loading ring
+            self.mainView.emptyView();
+
+            // Save data in localStorage
+            localStorage.setItem('stations',
+              JSON.stringify(self.stationCollection.toJSON()));
+          }).catch(function(resp) {
+            console.log('Problem');
+          });
+        }
+        
+      }
+    
     });
 
-
-    var searchBox = new SearchBox();
-    var stationCollection = new StationCollection();
-    var journeyModel = new JourneyModel();
-    var mainView = new MainView();
-    var headerView = new HeaderView();
+    var applicationView = new ApplicationView();
   
   });
-
-
 
 })();
