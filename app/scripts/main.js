@@ -85,8 +85,6 @@
      *
      */
 
-    // https://api.navitia.io/v1/journeys?from=7.842104%3B47.999008&to=8.682127%3B50.110922&datetime=20160805T160000&
-
     // Url of endpoint
     url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
 
@@ -261,6 +259,8 @@
       var fromCoord = fromModel.lon.concat(';', fromModel.lat);
       var toCoord = toModel.lon.concat(';', toModel.lat);
 
+      // mainView.renderLoad();
+
       // Get journey
       journeyModel.fetch({
 
@@ -282,8 +282,8 @@
     var mainView = new MainView();
   });
 
-  // Variable declaration
   var stationCollection = new StationCollection();
   var journeyModel = new JourneyModel();
   var headerView = new HeaderView();
+
 })();
