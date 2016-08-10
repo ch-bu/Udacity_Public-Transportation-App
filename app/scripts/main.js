@@ -75,13 +75,11 @@
 
   var sendAuthentication = function(xhr) {
     xhr.setRequestHeader('Authorization',
-      ("Basic ".concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
+      ('Basic '.concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
   };
-
 
   // Document is loaded
   $(document).ready(function() {
-
     var StationCollection = Backbone.Collection.extend({
       /*
        * Collection of all stations that exist for
@@ -230,29 +228,28 @@
         var fromCoord = fromModel.lon.concat(';', fromModel.lat);
         var toCoord = toModel.lon.concat(';', toModel.lat);
 
-        // mainView.renderLoad();
+        // Render loading in main view
+        applicationView.mainView.renderLoad();
 
         // Get journey
         applicationView.journeyModel.fetch({
 
-            beforeSend: sendAuthentication,
+          beforeSend: sendAuthentication,
 
-            // Add parameters to api endpoint
-            data: $.param({from: fromCoord, to: toCoord})
+          // Add parameters to api endpoint
+          data: $.param({from: fromCoord, to: toCoord})
 
-          }).then(function(response) {
-            console.log(response);
-          }).catch(function(resp) {
-            console.log('Problem finding journey');
-          });
+        }).then(function(response) {
+          console.log(response);
+        }).catch(function(resp) {
+          console.log('Problem finding journey');
+        });
       }
     });
 
-    
     var ApplicationView = Backbone.View.extend({
-      
+
       initialize: function() {
-        
         // Init models and views
         this.stationCollection = new StationCollection();
         this.journeyModel = new JourneyModel();
@@ -270,7 +267,8 @@
         // Check if station data is in localStorage
         if (localStorage.getItem('stations')) {
           // Add local storage to collection
-          self.stationCollection.add(JSON.parse(localStorage.getItem('stations')));
+          self.stationCollection.add(
+            JSON.parse(localStorage.getItem('stations')));
 
           // Immediately render searchbox
           self.searchBox.render();
@@ -307,13 +305,9 @@
             console.log('Problem');
           });
         }
-        
       }
-    
     });
 
     var applicationView = new ApplicationView();
-  
   });
-
 })();
