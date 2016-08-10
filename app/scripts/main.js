@@ -148,8 +148,18 @@
 
       emptyView: function() {
         this.$el.html('');
-      }
+      },
 
+      renderJourney: function(jsonData) {
+        // Renders journey
+        console.log(jsonData);
+        this.$el.html(MyApp.templates.journey({journey: jsonData}));
+
+        // Inititialize accordion functionality
+        $('.collapsible').collapsible({
+          accordion: false
+        });
+      }
     });
 
     // Your custom JavaScript goes here
@@ -217,7 +227,7 @@
         var fromInput = this.$el.find('#autocomplete-input-from').val();
         var toInput = this.$el.find('#autocomplete-input-to').val();
 
-        // Get models
+        // Get coordinates
         var fromModel = applicationView.stationCollection.find(function(model) {
           return model.get('name') === fromInput;
         }).get('coord');
@@ -225,6 +235,7 @@
           return model.get('name') === toInput;
         }).get('coord');
 
+        // Concat coordinates for api url
         var fromCoord = fromModel.lon.concat(';', fromModel.lat);
         var toCoord = toModel.lon.concat(';', toModel.lat);
 
@@ -234,13 +245,17 @@
         // Get journey
         applicationView.journeyModel.fetch({
 
+          // Send api-key with request
           beforeSend: sendAuthentication,
 
           // Add parameters to api endpoint
           data: $.param({from: fromCoord, to: toCoord})
-
+        // Promise was successfull
         }).then(function(response) {
-          console.log(response);
+          // Render journey in mainView
+          applicationView.mainView.renderJourney(
+            applicationView.journeyModel.toJSON());
+        // Promise was not successfull
         }).catch(function(resp) {
           console.log('Problem finding journey');
         });
