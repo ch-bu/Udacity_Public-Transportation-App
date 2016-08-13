@@ -78,6 +78,29 @@
       ('Basic '.concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
   };
 
+  /* 
+   * Handlebars helper
+   */
+  Handlebars.registerHelper('myDate', function(date) {
+    // return date.replace(/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/,
+    //   '$3-$2-$1 - $4:$5');
+  return date.replace(/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/,
+      '$4:$5');
+  });
+
+  Handlebars.registerHelper('minToHours', function(min) {
+    return parseFloat(min / 60 / 60).toFixed(2).toString();
+  });
+
+  /*
+   * Open database
+   */
+
+  var dbPromise = idb.open('transportationApp', 1, function(upgradeDb) {
+    var keyValStore = upgradeDb.createObjectStore('keyval');
+    keyValStore.put('world', 'hello');
+  });
+
   // Document is loaded
   $(document).ready(function() {
     var StationCollection = Backbone.Collection.extend({

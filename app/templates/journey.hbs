@@ -3,11 +3,44 @@
  	{{#each journey}}
     <li>
       <div class="collapsible-header">
-      	<i class="material-icons">my_location</i>First</div>
+      	<i class="material-icons">card_travel</i>{{myDate departure_date_time}} - {{myDate arrival_date_time}} &rarr; {{minToHours duration}}h
+      </div>
+      	
+
       	<div class="collapsible-body">
-      		<p>{{arrival_data_time}}</p>
+      		 
+      		 <table class="highlight">
+		        <thead>
+		          <tr>
+		              <th data-field="id">Arrival</th>
+		              <th data-field="name">Departure</th>
+		              <th data-field="price">From</th>
+		              <th data-field="price">To</th>
+		              <th data-field="name">Type</th>
+		          </tr>
+		        </thead>
+
+		        <tbody>
+		          {{#each sections}}
+			          <tr>
+			            <td>{{myDate departure_date_time}}</td>
+			            <td>{{myDate arrival_date_time}}</td>
+			            <td>{{from.name}}</td>
+			            <td>{{to.name}}</td>
+			            <td>{{type}}</td>
+			          </tr>
+		          {{/each}}
+		        </tbody>
+		      </table>
       </div>
     </li>
     {{/each}}
 
  </ul>
+
+ {{#each journey}}
+
+ {{else}}
+  <p>There is no connection journey</p>
+ {{/each}}
+

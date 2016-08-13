@@ -153,6 +153,7 @@ gulp.task('scripts', () =>
       //       you need to explicitly list your scripts here in the right order
       //       to be correctly concatenated
       './app/scripts/vendor/handlebars.js',
+      './app/scripts/vendor/idb.js',
       './app/scripts/templates.js',
       './app/scripts/vendor/jquery.js',
       './app/scripts/vendor/underscore.js',
