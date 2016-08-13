@@ -95,10 +95,14 @@
   /*
    * Open database
    */
-
-  var dbPromise = idb.open('transportationApp', 1, function(upgradeDb) {
-    var keyValStore = upgradeDb.createObjectStore('keyval');
-    keyValStore.put('world', 'hello');
+  var dbPromise = idb.open('transportationApp', 5, function(upgradeDB) {
+    
+    switch (upgradeDB.oldVersion) {
+      case 0:
+        upgradeDB.createObjectStore('keyval');
+      case 5:
+        upgradeDB.createObjectStore('bla');
+    }
   });
 
   // Document is loaded
@@ -175,8 +179,17 @@
 
       renderJourney: function(jsonData) {
         // Renders journey
-        console.log(jsonData);
         this.$el.html(MyApp.templates.journey({journey: jsonData}));
+
+        // dbPromise.keyValStore.put('weiter', jsonData);
+        // dbPromise.then(function(db) {
+        //   var tx = db.transaction('journeys', 'readwrite');
+        //   var keyValStore = tx.objectStore('journeys');
+        //   keyValStore.put('bars', 'foo');
+        //   return tx.complete;
+        // }).then(function() {
+        //   console.log('Added foo:bar');
+        // });
 
         // Inititialize accordion functionality
         $('.collapsible').collapsible({
