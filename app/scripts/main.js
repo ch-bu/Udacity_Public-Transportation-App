@@ -177,15 +177,26 @@
         // Renders journey
         this.$el.html(MyApp.templates.journey({journey: jsonData}));
 
-        // dbPromise.keyValStore.put('weiter', jsonData);
-        // dbPromise.then(function(db) {
-        //   var tx = db.transaction('journeys', 'readwrite');
-        //   var keyValStore = tx.objectStore('journeys');
-        //   keyValStore.put('bars', 'foo');
-        //   return tx.complete;
-        // }).then(function() {
-        //   console.log('Added foo:bar');
-        // });
+        console.log(jsonData);
+        // Cache journey in journeys keyvalstore
+        dbPromise.then(function(db) {
+          var tx = db.transaction('journeys', 'readwrite');
+          var journeyStore = tx.objectStore('journeys');
+          var connection = applicationView.searchBox.fromInput.concat(
+            applicationView.searchBox.toInput);
+          
+          // Put connection to keyvalstore
+          journeyStore.put({
+            from: applicationView.searchBox.fromInput,
+            to: applicationView.searchBox.toInput,
+            connection: jsonData
+          }, connection);
+
+          // Return if transaction was successful
+          return tx.complete;
+        }).then(function() {
+          console.log('Added journey');
+        });
 
         // Inititialize accordion functionality
         $('.collapsible').collapsible({
@@ -259,6 +270,10 @@
         var fromInput = this.$el.find('#autocomplete-input-from').val();
         var toInput = this.$el.find('#autocomplete-input-to').val();
 
+        // Save variables in scope of view
+        this.fromInput = fromInput;
+        this.toInput = toInput;
+
         // Get coordinates
         var fromModel = applicationView.stationCollection.find(function(model) {
           return model.get('name') === fromInput;
@@ -281,7 +296,8 @@
           beforeSend: sendAuthentication,
 
           // Add parameters to api endpoint
-          data: $.param({from: fromCoord, to: toCoord})
+          data: $.param({from: fromCoord, to: toCoord, 
+            count: 100, datetime: applicationView.datetime})
         // Promise was successfull
         }).then(function(response) {
           // Render journey in mainView
@@ -307,6 +323,11 @@
         this.mainView = new MainView();
 
         var self = this;
+
+        // Get datetime
+        var d = new Date();
+        var n = d.toISOString();
+        this.datetime = n.replace(/-/g, '').slice(0, -13).concat('000000');
 
         // Render load bar
         this.mainView.renderLoad();
