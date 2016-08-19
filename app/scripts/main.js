@@ -95,14 +95,10 @@
   /*
    * Open database
    */
-  var dbPromise = idb.open('transportationApp', 5, function(upgradeDB) {
+  var dbPromise = idb.open('transportationApp', 1, function(upgradeDB) {
     
-    switch (upgradeDB.oldVersion) {
-      case 0:
-        upgradeDB.createObjectStore('keyval');
-      case 5:
-        upgradeDB.createObjectStore('bla');
-    }
+    upgradeDB.createObjectStore('journeys');
+    
   });
 
   // Document is loaded
