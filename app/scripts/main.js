@@ -87,7 +87,17 @@
   });
 
   Handlebars.registerHelper('minToHours', function(min) {
-    return parseFloat(min / 60 / 60).toFixed(2).toString();
+    var hours = Math.floor( parseFloat(min) / 60 / 60);
+    var minutes = Math.ceil((min / 60) % 60);
+    return hours + "h " + minutes + " min";
+  });
+
+  Handlebars.registerHelper("ifvalue", function(conditional, options) {
+    if (conditional == options.hash.equals) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
   });
 
   /*
@@ -170,12 +180,18 @@
       },
 
       renderJourney: function(jsonData) {
-        this.$el.html(MyApp.templates.journey({journey: jsonData}));
 
-        // Inititialize accordion functionality
-        $('.collapsible').collapsible({
-          accordion: false
-        });
+        // Check if json data is empty
+        if ($.isEmptyObject(jsonData)) {
+          this.$el.html(MyApp.templates.journey());
+        } else {
+          this.$el.html(MyApp.templates.journey({journey: jsonData}));
+
+          // Inititialize accordion functionality
+          $('.collapsible').collapsible({
+            accordion: false
+          });
+        }
       }
     });
 
@@ -279,11 +295,11 @@
 
               // Add parameters to api endpoint
               data: $.param({from: fromCoord, to: toCoord,
-                count: 20})
-              // , datetime: applicationView.datetime
+                count: 80, datetime: applicationView.datetime})
             // Journey could be fetched
             })
             .then(function() {
+
               dbPromise.then(function(db) {
                 var tx = db.transaction('journeys', 'readwrite');
                 var journeyStore = tx.objectStore('journeys');
@@ -362,7 +378,6 @@
 
           }).then(function(response) {
             // Display search box
-
             self.searchBox.render(self.stationCollection.toJSON(),
               self.stationCollection.byName());
 
@@ -373,7 +388,7 @@
             localStorage.setItem('stations',
               JSON.stringify(self.stationCollection.toJSON()));
           }).catch(function(resp) {
-            console.log('Problem');
+            console.log('Could not fetch station data from api');
           });
         }
       }

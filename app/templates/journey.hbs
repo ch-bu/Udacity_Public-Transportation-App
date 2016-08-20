@@ -1,46 +1,58 @@
- <ul class="collapsible col s12 m8 offset-m2" data-collapsible="accordion">
+ {{#if journey}}
+	 <ul class="collapsible col s12 m8 offset-m2" data-collapsible="accordion">
 
- 	{{#each journey}}
-    <li>
-      <div class="collapsible-header">
-      	<i class="material-icons">card_travel</i>{{myDate departure_date_time}} - {{myDate arrival_date_time}} &rarr; {{minToHours duration}}h
-      </div>
-      	
+	 	{{#each journey}}
+	    <li>
+	      <div class="collapsible-header">
+	      	<i class="material-icons">card_travel</i>{{myDate departure_date_time}} - {{myDate arrival_date_time}} &rarr; {{minToHours duration}}
+	      </div>
+	      	
 
-      	<div class="collapsible-body">
-      		 
-      		 <table class="highlight">
-		        <thead>
-		          <tr>
-		              <th data-field="id">Arrival</th>
-		              <th data-field="name">Departure</th>
-		              <th data-field="price">From</th>
-		              <th data-field="price">To</th>
-		              <th data-field="name">Type</th>
-		          </tr>
-		        </thead>
-
-		        <tbody>
-		          {{#each sections}}
+	      	<div class="collapsible-body">
+	      		 
+	      		 <table class="highlight">
+			        <thead>
 			          <tr>
-			            <td>{{myDate departure_date_time}}</td>
-			            <td>{{myDate arrival_date_time}}</td>
-			            <td>{{from.name}}</td>
-			            <td>{{to.name}}</td>
-			            <td>{{type}}</td>
+			              <th data-field="id">Departure</th>
+			              <th data-field="name">Arrival</th>
+			              <th data-field="price">From</th>
+			              <th data-field="price">To</th>
+			              <th data-field="name">Type</th>
 			          </tr>
-		          {{/each}}
-		        </tbody>
-		      </table>
-      </div>
-    </li>
-    {{/each}}
+			        </thead>
 
- </ul>
+			        <tbody>
+			          {{#each sections}}
+				          <tr>
+				            <td>{{myDate departure_date_time}}</td>
+				            <td>{{myDate arrival_date_time}}</td>
+				            <td>{{from.name}}</td>
+				            <td>{{to.name}}</td>
+				            {{#ifvalue type equals="waiting"}}
+						        <td><img src="../images/waiting.png" alt="waiting"></td>
+						    {{/ifvalue}}
+						    {{#ifvalue type equals="public_transport"}}
+						        <td><img src="../images/public_transport.png" alt="public transport"></td>
+						    {{/ifvalue}}
+						    {{#ifvalue type equals="street_network"}}
+						        <td><img src="../images/street_network.png" alt="street network"></td>
+						    {{/ifvalue}}
+						    {{#ifvalue type equals="transfer"}}
+						        <td><img src="../images/walking.png" alt="transfer"></td>
+						    {{/ifvalue}}
+						    {{#ifvalue type equals="crow_fly"}}
+						        <td><img src="../images/crow_fly.png" alt="crow fly"></td>
+						    {{/ifvalue}}
+				          </tr>
+			          {{/each}}
+			        </tbody>
+			      </table>
+	      </div>
+	    </li>
+	    {{/each}}
 
- {{#each journey}}
-
- {{else}}
-  <p>There is no connection journey</p>
- {{/each}}
+	 </ul>
+{{else}}
+	<p>there is an error</p>
+{{/if}}
 
