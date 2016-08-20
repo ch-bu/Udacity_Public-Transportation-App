@@ -82,8 +82,6 @@
    * Handlebars helper
    */
   Handlebars.registerHelper('myDate', function(date) {
-    // return date.replace(/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/,
-    //   '$3-$2-$1 - $4:$5');
   return date.replace(/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/,
       '$4:$5');
   });
@@ -175,28 +173,60 @@
 
       renderJourney: function(jsonData) {
         // Renders journey
+
+        // var connection = applicationView.searchBox.fromInput.concat(
+        //     applicationView.searchBox.toInput);
+
         this.$el.html(MyApp.templates.journey({journey: jsonData}));
 
-        console.log(jsonData);
-        // Cache journey in journeys keyvalstore
-        dbPromise.then(function(db) {
-          var tx = db.transaction('journeys', 'readwrite');
-          var journeyStore = tx.objectStore('journeys');
-          var connection = applicationView.searchBox.fromInput.concat(
-            applicationView.searchBox.toInput);
-          
-          // Put connection to keyvalstore
-          journeyStore.put({
-            from: applicationView.searchBox.fromInput,
-            to: applicationView.searchBox.toInput,
-            connection: jsonData
-          }, connection);
+        // // Cache journey in journeys keyvalstore
+        // dbPromise.then(function(db) {
 
-          // Return if transaction was successful
-          return tx.complete;
-        }).then(function() {
-          console.log('Added journey');
-        });
+        //   var tx = db.transaction('journeys');
+        //   var journeyStore = tx.objectStore('journeys');
+
+        //   return journeyStore.get(connection);
+
+        //     // Put connection to keyvalstore
+        //     // journeyStore.put({
+        //     //   from: applicationView.searchBox.fromInput,
+        //     //   to: applicationView.searchBox.toInput,
+        //     //   connection: jsonData,
+        //     //   date: applicationView.today.toDateString()
+        //     // }, connection);
+
+        //     // // Return if transaction was successful
+        //     // return tx.complete;
+
+        //   // });
+        // }).then(function(val) {
+        //   // Key is undefined
+        //   if (!val) {
+        //     // Cache journey
+        //     dbPromise.then(function(db) {
+        //       var tx = db.transaction('journeys', 'readwrite');
+        //       var journeyStore = tx.objectStore('journeys');
+
+        //       // Put connection to keyvalstore
+        //       journeyStore.put({
+        //         from: applicationView.searchBox.fromInput,
+        //         to: applicationView.searchBox.toInput,
+        //         connection: jsonData,
+        //         date: applicationView.today.toDateString()
+        //       }, connection);
+
+        //       // Return if transaction was successful
+        //       return tx.complete;
+        //     });
+        //   }
+        
+        //   // self.$el.html(MyApp.templates.journey({journey: val.connection}));
+          
+        // }).then(function(response) {
+        //   console.log('success');
+        // }).catch(function(error) {
+        //   console.log('error');
+        // });
 
         // Inititialize accordion functionality
         $('.collapsible').collapsible({
@@ -266,6 +296,8 @@
          * connections
          */
 
+        var self = this;
+
         // Get IDs for stations
         var fromInput = this.$el.find('#autocomplete-input-from').val();
         var toInput = this.$el.find('#autocomplete-input-to').val();
@@ -285,28 +317,83 @@
         // Concat coordinates for api url
         var fromCoord = fromModel.lon.concat(';', fromModel.lat);
         var toCoord = toModel.lon.concat(';', toModel.lat);
+        var connection = this.fromInput.concat(this.toInput);
 
         // Render loading in main view
         applicationView.mainView.renderLoad();
 
-        // Get journey
-        applicationView.journeyModel.fetch({
+        // Check if connection has been cached
+        dbPromise.then(function(db) {
+          var tx = db.transaction('journeys');
+          var journeyStore = tx.objectStore('journeys');
+          
+          return journeyStore.get(connection);
 
-          // Send api-key with request
-          beforeSend: sendAuthentication,
-
-          // Add parameters to api endpoint
-          data: $.param({from: fromCoord, to: toCoord, 
-            count: 100, datetime: applicationView.datetime})
-        // Promise was successfull
         }).then(function(response) {
-          // Render journey in mainView
-          applicationView.mainView.renderJourney(
-            applicationView.journeyModel.toJSON());
-        // Promise was not successfull
-        }).catch(function(resp) {
-          console.log('Problem finding journey');
+
+          // Data has not been cached
+          if (!response) {
+            // Fetch journey
+            applicationView.journeyModel.fetch({
+
+              // Send api-key with request
+              beforeSend: sendAuthentication,
+
+              // Add parameters to api endpoint
+              data: $.param({from: fromCoord, to: toCoord,
+                count: 20})
+              // , datetime: applicationView.datetime
+            // Journey could be fetched
+            })
+            .then(function() {
+              dbPromise.then(function(db) {
+                var tx = db.transaction('journeys', 'readwrite');
+                var journeyStore = tx.objectStore('journeys');
+
+                // Put connection to journeys
+                journeyStore.put({
+                  from: fromInput,
+                  to: toInput,
+                  connection: applicationView.journeyModel.toJSON(),
+                  date: applicationView.today.toDateString()
+                }, connection);
+
+                console.log('cache connection');
+
+                // Return if transaction was successful
+                return tx.complete;
+              }).then(function() {
+                console.log('render connection');
+                applicationView.mainView.renderJourney(
+                  applicationView.journeyModel.toJSON());
+              });
+            });
+          // Journey has been cached
+          } else {
+            applicationView.mainView.renderJourney(response.connection);
+          }
         });
+
+        // // Get journey
+        // applicationView.journeyModel.fetch({
+
+        //   // Send api-key with request
+        //   beforeSend: sendAuthentication,
+
+        //   // Add parameters to api endpoint
+        //   data: $.param({from: fromCoord, to: toCoord,
+        //     count: 20})
+        //   // , datetime: applicationView.datetime
+        // // Promise was successfull
+        // }).then(function(response) {
+        //   // Render journey in mainView
+        //   applicationView.mainView.renderJourney(
+        //     applicationView.journeyModel.toJSON());
+        // // Promise was not successfull
+        // }).catch(function(resp) {
+        //   console.log('Problem finding journey');
+        // });
+      
       }
     });
 
@@ -325,9 +412,9 @@
         var self = this;
 
         // Get datetime
-        var d = new Date();
-        var n = d.toISOString();
-        this.datetime = n.replace(/-/g, '').slice(0, -13).concat('000000');
+        this.today = new Date();
+        var n = this.today.toISOString();
+        this.datetime = n.replace(/-/g, '').slice(0, -13).concat('060000');
 
         // Render load bar
         this.mainView.renderLoad();
