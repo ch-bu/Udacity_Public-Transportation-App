@@ -61,12 +61,13 @@
     </main>
 
     <!-- Modal Structure -->
-    <div id="modal1" class="modal bottom-sheet">
+    <div id="modal1" class="modal">
         <div class="modal-content row">
-            <p>There is an update available.</p>
+            <p class="center-align">There is an update available. If you want to install the update click Reload. If not click Skip.</p>
         </div>
         <div class="modal-footer">
-            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+          <a href="#!" id="reloadServiceWorker" class="modal-action modal-close waves-effect waves-green btn-flat">Reload</a>
+          <a href="#!" id="skipServiceWorker" class="modal-action modal-close waves-effect waves-green btn-flat">Skip</a>
         </div>
     </div>
           

@@ -2,9 +2,7 @@
   'use strict';
 
   // Check to make sure service workers are supported in the current browser,
-  // and that the current page is accessed from a secure origin. Using a
-  // service worker from an insecure origin will trigger JS console errors. See
-  // http://www.chromium.org/Home/chromium-security/prefer-secure-origins-for-powerful-new-features
+  // and that the current page is accessed from a secure origin.
   var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
       // [::1] is the IPv6 localhost address.
       window.location.hostname === '[::1]' ||
@@ -14,18 +12,14 @@
       )
     );
 
+  /**
+   * @description Check if service worker can be implementend and if
+   *              protocols are appropriate
+   */
   if ('serviceWorker' in navigator &&
       (window.location.protocol === 'https:' || isLocalhost)) {
     navigator.serviceWorker.register('service-worker.js')
     .then(function(registration) {
-
-      // registration.addEventListener('updatefound', function() {
-      //   registration.installing.addEventListener('statechange', function() {
-      //     if (this.state == 'installed') {
-      //       console.log('there is an update ready');
-      //     }
-      //   });
-      // });
       // updatefound is fired if service-worker.js changes.
       registration.onupdatefound = function() {
         // updatefound is also fired the very first time the SW is installed,
@@ -40,21 +34,18 @@
           installingWorker.onstatechange = function() {
             switch (installingWorker.state) {
               case 'installed':
-                console.log('installed');
+                console.log('installed service worker');
                 $('#modal1').openModal();
-                // At this point, the old content will have been purged and the
-                // fresh content will have been added to the cache.
-                // It's the perfect time to display a "New content is
-                // available; please refresh." message in the page's interface.
-                break;
-              case 'activated':
-                console.log('activated');
+                applicationView.modalView = new ModalView();
                 break;
               case 'activating':
-                console.log('activating');
+                console.log('activating service worker');
+                break;
+              case 'activated':
+                console.log('activated service worker');
                 break;
               case 'redundant':
-                console.log('redundant');
+                console.log('redundant service worker');
                 break;
               case 'redundant':
                 throw new Error('The installing ' +
@@ -76,14 +67,24 @@
       ('Basic '.concat(btoa('16897ba2-c7cf-4a45-8803-fa2f46337f2f'))));
   };
 
-  /*
-   * Handlebars helper
+  /**
+   * @description Turns a ISO date string to a simple hours:minutes 
+   *              representation
+   * @param  {String} Date in ISO 8601 format
+   * @return {String} Date with only hours and minutes, e.g. 15:45
    */
   Handlebars.registerHelper('myDate', function(date) {
     return date.replace(
       /([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/, '$4:$5');
   });
 
+  /**
+  * @description: Handlebar helper that converts minutes to an hour and
+  *               minutes format
+  * @param {number} min
+  * @returns {String} Hour and minutes representation of train time
+  *                   e.g. 1h 15min
+  */
   Handlebars.registerHelper('minToHours', function(min) {
     var hours = Math.floor(parseFloat(min) / 60 / 60);
     var minutes = Math.ceil((min / 60) % 60);
@@ -97,8 +98,8 @@
     return options.inverse(this);
   });
 
-  /*
-   * Open database
+  /**
+   * @description Opens an indexedDB database
    */
   var dbPromise = idb.open('transportationApp', 1, function(upgradeDB) {
     upgradeDB.createObjectStore('journeys');
@@ -106,15 +107,15 @@
 
   // Document is loaded
   $(document).ready(function() {
-    var StationCollection = Backbone.Collection.extend({
-      /*
-       * Collection of all stations that exist for
-       * given operator.
-       *
-       */
 
+    /**
+     * @description Collection of all stations that exist for a
+     *              given network.   
+     */
+    var StationCollection = Backbone.Collection.extend({
       // Url of endpoint
-      url: 'https://api.navitia.io/v1/coverage/de/networks/network%3Adb_regio_ag/stop_points',
+      url: 'https://api.navitia.io/v1/coverage/de/networks/' +
+           'network%3Adb_regio_ag/stop_points',
 
       initialize: function() {
       },
@@ -210,7 +211,32 @@
       }
     });
 
-    var SearchBox = Backbone.View.extend({
+    /**
+     * @description View for Modal
+     * @return {Object} Backbone View of Modal
+     */
+    var ModalView = Backbone.View.extend({
+      el: '.modal1',
+
+      events: {
+        'click #reloadServiceWorker': 'reload',
+        'click #skipServiceWorker': 'skip',
+      },
+
+      initialize: function() {
+        console.log('init-modal');
+      },
+
+      reload: function() {
+        console.log('reload');
+      },
+
+      skip: function() {
+        console.log('skip');
+      }
+    });
+    
+    var SearchView = Backbone.View.extend({
       /*
        * Search Box for user input
        *  defines destination where user is and want's to go
@@ -252,8 +278,6 @@
          * connections
          */
 
-        var self = this;
-
         // Get IDs for stations
         var fromInput = this.$el.find('#autocomplete-input-from').val();
         var toInput = this.$el.find('#autocomplete-input-to').val();
@@ -274,26 +298,27 @@
         // Render loading in main view
         applicationView.mainView.renderLoad();
 
-        // Check if connection has been cached
+        // Get journey from indexedDB
         dbPromise.then(function(db) {
           var tx = db.transaction('journeys');
           var journeyStore = tx.objectStore('journeys');
 
           return journeyStore.get(connection);
         }).then(function(response) {
-          // Data has not been cached
+          // Journey has not been cached
           if (response === undefined) {
-            // Fetch journey
+            // Fetch journey from api
             applicationView.journeyModel.fetch({
 
               // Send api-key with request
               beforeSend: sendAuthentication,
 
-              // Add parameters to api endpoint
+              // Add parameters to api request
               data: $.param({from: fromCoord, to: toCoord,
                 count: 80, datetime: applicationView.datetime})
             // Journey could be fetched
             })
+            // Fetch was successful
             .then(function() {
               dbPromise.then(function(db) {
                 var tx = db.transaction('journeys', 'readwrite');
@@ -309,13 +334,14 @@
 
                 // Return if transaction was successful
                 return tx.complete;
+              // Journey has been put into indexedDB
               }).then(function() {
                 // Render view
                 applicationView.mainView.renderJourney(
                   applicationView.journeyModel.toJSON());
               });
             });
-          // Journey has been cached
+          // Journey has already been cached
           } else {
             // Render view
             applicationView.mainView.renderJourney(response.connection);
@@ -333,7 +359,7 @@
 
         // Init views
         this.headerView = new HeaderView();
-        this.searchBox = new SearchBox();
+        this.searchBox = new SearchView();
         this.mainView = new MainView();
 
         var self = this;
@@ -343,13 +369,13 @@
         var n = this.today.toISOString();
         this.datetime = n.replace(/-/g, '').slice(0, -13).concat('060000');
 
-        // Render modal
+        // Initialize modal for when new service worker is installed
         $('#modal1').leanModal();
 
         // Render load bar
         this.mainView.renderLoad();
 
-        // Check if station data is in localStorage
+        // Station data in localStorage
         if (localStorage.getItem('stations')) {
           // Add local storage to collection
           self.stationCollection.add(
@@ -364,11 +390,12 @@
           // Enable autocomplete functionality
           self.searchBox.render(self.stationCollection.toJSON(),
             self.stationCollection.byName());
-        // Station data not cached
+        // Station data not in localStorage
         } else {
           // Get stations
           self.stationCollection.fetch({
 
+            // Send authentification header to api endpoint
             beforeSend: sendAuthentication,
 
             // Add parameters to api endpoint
@@ -385,6 +412,7 @@
             // Save data in localStorage
             localStorage.setItem('stations',
               JSON.stringify(self.stationCollection.toJSON()));
+          // Station data could not be fetched from api endpoint
           }).catch(function(resp) {
             console.log('Could not fetch station data from api');
           });
