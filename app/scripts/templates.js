@@ -50,7 +50,7 @@ this["MyApp"]["templates"]["journey"] = Handlebars.template({"1":function(contai
 },"12":function(container,depth0,helpers,partials,data) {
     return "						        <td><img src=\"../images/crow_fly.png\" alt=\"crow fly\"></td>\n";
 },"14":function(container,depth0,helpers,partials,data) {
-    return "	<p>there is an error</p>\n";
+    return "    <div class=\"row\">\n      <div class=\"col s12 m10 offset-m1\">\n        <div class=\"card-panel teal\">\n          <p>Unfortunately, this journey doesn't exist.</p>\n        </div>\n      </div>\n    </div>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1;
 
