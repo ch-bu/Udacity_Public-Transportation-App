@@ -6,9 +6,9 @@ this["MyApp"]["templates"]["header"] = Handlebars.template({"compiler":[7,">= 4.
 this["MyApp"]["templates"]["journey"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "	 <ul class=\"collapsible col s12 m8 offset-m2\" data-collapsible=\"accordion\">\n\n"
+  return "	 <ul class=\"collapsible col s12 m10 offset-m1\" data-collapsible=\"accordion\">\n\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.journey : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\n	 </ul>\n\n";
+    + "\n	 </ul>\n";
 },"2":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3=container.escapeExpression;
 
@@ -52,16 +52,14 @@ this["MyApp"]["templates"]["journey"] = Handlebars.template({"1":function(contai
 },"14":function(container,depth0,helpers,partials,data) {
     return "	<p>there is an error</p>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=depth0 != null ? depth0 : {};
+    var stack1;
 
-  return ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.journey : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.error : depth0),{"name":"if","hash":{},"fn":container.program(14, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.journey : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(14, data, 0),"data":data})) != null ? stack1 : "")
     + "\n";
 },"useData":true});
 this["MyApp"]["templates"]["loading"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<div class=\"progress col s12 m8 offset-m2\">\n  <div class=\"indeterminate\"></div>\n</div>";
 },"useData":true});
 this["MyApp"]["templates"]["searchbox"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<form id=\"searchbox\" class=\"col s10 offset-s1 m8 offset-m2\">\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <input type=\"text\" id=\"autocomplete-input-from\" class=\"autocomplete\">\n      <label for=\"autocomplete-input\">From</label>\n    </div>\n  </div>\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <input type=\"text\" id=\"autocomplete-input-to\" class=\"autocomplete\">\n      <label for=\"autocomplete-input\">To</label>\n    </div>\n  </div>\n\n  <div class=\"row center-align\">\n      <a id=\"searchbox_button\" class=\"waves-effect waves-light btn\">Find journey.</a>\n  </div>\n</form>";
+    return "<form id=\"searchbox\" class=\"col s10 offset-s1 m10 offset-m1\">\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <input type=\"text\" id=\"autocomplete-input-from\" class=\"autocomplete\">\n      <label for=\"autocomplete-input\">From</label>\n    </div>\n  </div>\n\n  <div class=\"row\">\n    <div class=\"input-field\">\n      <input type=\"text\" id=\"autocomplete-input-to\" class=\"autocomplete\">\n      <label for=\"autocomplete-input\">To</label>\n    </div>\n  </div>\n\n  <div class=\"row center-align\">\n      <a id=\"searchbox_button\" class=\"waves-effect waves-light btn\">Find journey.</a>\n  </div>\n</form>";
 },"useData":true});
