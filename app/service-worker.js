@@ -1,4 +1,4 @@
-var staticCacheName = 'transportation-v2';
+var staticCacheName = 'transportation-v1';
 
 /**
  * @param  {[type]}
@@ -8,7 +8,7 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
       caches.open(staticCacheName).then(function(cache) {
         return cache.addAll([
-          '/',
+          '/skeleton.html',
           '/styles/materialize.css',
           'images/waiting.png',
           'images/crow_fly.png',
@@ -27,6 +27,18 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
+
+    var requestUrl = new URL(event.request.url);
+
+    if (requestUrl.origin === location.origin) {
+
+      if (requestUrl.pathname === '/') {
+
+        event.respondWith(caches.match('/skeleton.html'));
+        return;
+      }
+    }
+
     event.respondWith(
       caches.match(event.request).then(function(response) {
         if (response) return response;

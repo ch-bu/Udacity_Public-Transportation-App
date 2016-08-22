@@ -27,30 +27,17 @@
         // So check here to see if the page is already controlled,
         // i.e. whether there's an existing service worker.
         if (navigator.serviceWorker.controller) {
-          // The updatefound event implies that registration.installing is set:
-          // https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-container-updatefound-event
           var installingWorker = registration.installing;
 
           installingWorker.onstatechange = function() {
             switch (installingWorker.state) {
               case 'installed':
                 console.log('installed service worker');
-                $('#modal1').openModal();
-                applicationView.modalView = new ModalView();
-                break;
-              case 'activating':
-                console.log('activating service worker');
-                break;
-              case 'activated':
-                console.log('activated service worker');
-                break;
-              case 'redundant':
-                console.log('redundant service worker');
+                // navigator.serviceWorker.activate();
                 break;
               case 'redundant':
                 throw new Error('The installing ' +
                                 'service worker became redundant.');
-
               default:
                 // Ignore
             }
