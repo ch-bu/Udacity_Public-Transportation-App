@@ -1,0 +1,36 @@
+<div class="col s12 m10 offset-m1">
+
+	<p>You might be offline. Have a look at the connections you already looked for:</p>
+
+	{{#if cachedJourneys}}
+
+	<table class="highlight">
+	    <thead>
+	      <tr>
+	          <th data-field="id">From</th>
+	          <th data-field="name">To</th>
+	      </tr>
+	    </thead>
+
+	    <tbody>
+	      {{#each cachedJourneys}}
+
+	      <tr>
+	        <td>{{from}}</td>
+	        <td>{{to}}</td>
+	      </tr>
+
+	      {{/each}}
+	    </tbody>
+	</table>
+	{{else}}
+	    <div class="row">
+	      <div class="col s12 m10 offset-m1">
+	        <div class="card-panel teal">
+	          <p>Unfortunately, you haven't cached any journeys.</p>
+	        </div>
+	      </div>
+	    </div>
+	{{/if}}
+
+</div>

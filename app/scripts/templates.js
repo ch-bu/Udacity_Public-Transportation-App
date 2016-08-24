@@ -57,6 +57,29 @@ this["MyApp"]["templates"]["journey"] = Handlebars.template({"1":function(contai
   return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.journey : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(14, data, 0),"data":data})) != null ? stack1 : "")
     + "\n";
 },"useData":true});
+this["MyApp"]["templates"]["journeyerror"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "\n	<table class=\"highlight\">\n	    <thead>\n	      <tr>\n	          <th data-field=\"id\">From</th>\n	          <th data-field=\"name\">To</th>\n	      </tr>\n	    </thead>\n\n	    <tbody>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.cachedJourneys : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "	    </tbody>\n	</table>\n";
+},"2":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "\n	      <tr>\n	        <td>"
+    + alias4(((helper = (helper = helpers.from || (depth0 != null ? depth0.from : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"from","hash":{},"data":data}) : helper)))
+    + "</td>\n	        <td>"
+    + alias4(((helper = (helper = helpers.to || (depth0 != null ? depth0.to : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"to","hash":{},"data":data}) : helper)))
+    + "</td>\n	      </tr>\n\n";
+},"4":function(container,depth0,helpers,partials,data) {
+    return "	    <div class=\"row\">\n	      <div class=\"col s12 m10 offset-m1\">\n	        <div class=\"card-panel teal\">\n	          <p>Unfortunately, you haven't cached any journeys.</p>\n	        </div>\n	      </div>\n	    </div>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<div class=\"col s12 m10 offset-m1\">\n\n	<p>You might be offline. Have a look at the connections you already looked for:</p>\n\n"
+    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.cachedJourneys : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+    + "\n</div>";
+},"useData":true});
 this["MyApp"]["templates"]["loading"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<div class=\"progress col s12 m8 offset-m2\">\n  <div class=\"indeterminate\"></div>\n</div>";
 },"useData":true});

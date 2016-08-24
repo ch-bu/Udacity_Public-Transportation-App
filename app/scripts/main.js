@@ -176,6 +176,10 @@
             accordion: false
           });
         }
+      },
+
+      renderJourneyError: function(jsonData) {
+        this.$el.html(MyApp.templates.journeyerror({cachedJourneys: jsonData}));
       }
     });
 
@@ -326,6 +330,17 @@
                 // Render view
                 applicationView.mainView.renderJourney(
                   applicationView.journeyModel.toJSON());
+              });
+            // Fetch was not successful
+            }).catch(function() {
+              // Get all connections
+              dbPromise.then(function(db) {
+                return db.transaction('journeys')
+                  .objectStore('journeys').getAll();
+              }).then(function(allObj) {
+                applicationView.mainView.renderJourneyError(allObj);
+              }).catch(function() {
+                console.log('heavy error');
               });
             });
           // Journey has already been cached
