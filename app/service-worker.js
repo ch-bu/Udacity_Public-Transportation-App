@@ -1,12 +1,12 @@
-var staticCacheName = 'transportation-v1';
+// Constat for name of service worker
+var STATICCACHENAME = 'transportation-v1';
 
 /**
- * @param  {[type]}
- * @return {[type]}
+ * Listen for install event of service worker
  */
 self.addEventListener('install', function(event) {
     event.waitUntil(
-      caches.open(staticCacheName).then(function(cache) {
+      caches.open(STATICCACHENAME).then(function(cache) {
         return cache.addAll([
           '/index.html',
           '/styles/materialize.css',
@@ -26,6 +26,9 @@ self.addEventListener('install', function(event) {
     );
 });
 
+/**
+ * Listen for fetch events
+ */
 self.addEventListener('fetch', function(event) {
 
     event.respondWith(
@@ -37,7 +40,11 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
+/**
+ * Listen for active of service worker
+ */
 self.addEventListener('activate', function(event) {
+    // Remove old service workers
     event.waitUntil(
         caches.keys().then(function(cacheNames) {
           return Promise.all(
