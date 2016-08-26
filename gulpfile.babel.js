@@ -289,7 +289,7 @@ gulp.task('serve:dist', ['default'], () =>
 gulp.task('default', ['clean'], cb =>
   runSequence(
     'styles',
-    ['lint', 'html', 'scripts-vendor', 'scripts-app',
+    ['bower-files', 'lint', 'html', 'scripts-vendor', 'scripts-app',
     'images', 'copy', 'copy-fonts'],
     cb
   )
