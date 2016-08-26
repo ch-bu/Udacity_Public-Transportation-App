@@ -1,5 +1,20 @@
-(function(Backbone, $, MyApp, Handlebars) {
+/* global window: false */
+/* global navigator: false */
+/* global $: false */
+/* global document: false */
+/* global idb: false */
+/* global btoa: false */
+/* global Handlebars: false */
+/* global MyApp: false */
+/* global Backbone: false */
+/* global localStorage: false */
+
+(function(Backbone, $, MyApp, Handlebars, window, navigator, localStorage,
+  document, btoa, idb) {
   'use strict';
+
+  // App
+  var applicationView;
 
   /**
   * Check to make sure service workers are supported in the current browser,
@@ -52,7 +67,7 @@
 
   /**
    * Sends api authentification for api get request
-   * @param  {Object} xhr
+   * @param  {[type]} xhr [description]
    */
   var sendAuthentication = function(xhr) {
     xhr.setRequestHeader('Authorization',
@@ -392,14 +407,15 @@
             localStorage.setItem('stations',
               JSON.stringify(self.stationCollection.toJSON()));
           // Station data could not be fetched from api endpoint
-          }).catch(function(resp) {
+          }).catch(function() {
             console.log('Could not fetch station data from api');
           });
         }
       }
     });
 
-    // Fire application
-    var applicationView = new ApplicationView();
+    // Fire up application
+    applicationView = new ApplicationView();
   });
-})(Backbone, $, MyApp, Handlebars);
+})(Backbone, $, MyApp, Handlebars, window, navigator, localStorage,
+  document, btoa, idb);
