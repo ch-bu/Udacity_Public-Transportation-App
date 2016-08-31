@@ -111,6 +111,11 @@ gulp.task('copy-fonts', function() {
     'app/fonts/**/*',
     ])
     .pipe(gulp.dest('dist/fonts'));
+
+  gulp.src([
+    'app/templates/**/*',
+    ])
+    .pipe(gulp.dest('dist/templates'));
 });
 
 /**
@@ -290,7 +295,7 @@ gulp.task('default', ['clean'], cb =>
   runSequence(
     'styles',
     ['bower-files', 'lint', 'html', 'scripts-vendor', 'scripts-app',
-    'images', 'copy', 'copy-fonts'],
+    'styles', 'images', 'copy', 'copy-fonts'],
     cb
   )
 );

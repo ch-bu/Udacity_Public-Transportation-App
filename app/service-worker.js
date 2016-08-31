@@ -16,7 +16,7 @@ self.addEventListener('install', function(event) {
           'images/street_network.png',
           'images/walking.png',
           '/styles/main.css',
-          '/scripts/main.min.js',
+          '/scripts/main.js',
           'https://fonts.googleapis.com/icon?family=Material+Icons',
           'fonts/roboto/Roboto-Regular.woff',
           'fonts/roboto/Roboto-Regular.woff2',
@@ -50,7 +50,7 @@ self.addEventListener('activate', function(event) {
           return Promise.all(
             cacheNames.filter(function(cacheName) {
               return cacheName.startsWith('transportation-') &&
-                     cacheName != staticCacheName;
+                     cacheName != STATICCACHENAME;
             }).map(function(cacheName) {
               return caches.delete(cacheName);
             })
