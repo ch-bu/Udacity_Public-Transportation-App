@@ -298,7 +298,15 @@
 
               // Add parameters to api request
               data: $.param({from: fromCoord, to: toCoord,
-                count: 80, datetime: applicationView.datetime})
+                count: 80, datetime: applicationView.datetime}),
+
+              success: function() {
+                console.log('yeah');
+              },
+
+              error: function() {
+                console.log('nope');
+              },
             })
             // Fetch was successful
             .then(function() {
@@ -339,6 +347,9 @@
             // Render view
             applicationView.mainView.renderJourney(response.connection);
           }
+        // Journey could not be found in indexedDB
+        }).catch(function() {
+          console.log('Could not fetch connection from indexDB');
         });
       }
     });

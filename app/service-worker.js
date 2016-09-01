@@ -1,5 +1,5 @@
 // Constat for name of service worker
-var STATICCACHENAME = 'transportation-v1';
+var STATICCACHENAME = 'transportation-v2';
 
 /**
  * Listen for install event of service worker
@@ -20,7 +20,10 @@ self.addEventListener('install', function(event) {
           'https://fonts.googleapis.com/icon?family=Material+Icons',
           'fonts/roboto/Roboto-Regular.woff',
           'fonts/roboto/Roboto-Regular.woff2',
-          'fonts/roboto/Roboto-Regular.ttf'
+          'fonts/roboto/Roboto-Regular.ttf',
+          'fonts/roboto/Roboto-Bold.woff',
+          'fonts/roboto/Roboto-Bold.woff2',
+          'fonts/roboto/Roboto-Bold.ttf',
         ]);
       })
     );
